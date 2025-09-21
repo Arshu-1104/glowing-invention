@@ -47,8 +47,9 @@
             </div>
 
             <div class="form-group">
-                <label for="imageUrl">Image URL:</label>
-                <input type="url" id="imageUrl" name="imageUrl" placeholder="Enter image URL (optional)">
+                <label for="imageFiles">Product Images:</label>
+                <input type="file" id="imageFiles" name="imageFiles" multiple accept="image/*" placeholder="Select product images">
+                <small>You can select multiple images. The first image will be the primary image.</small>
             </div>
 
             <button type="submit" class="btn btn-primary" style="width: 100%;">Add Product</button>

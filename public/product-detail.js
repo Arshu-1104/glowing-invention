@@ -135,9 +135,9 @@ async function loadProductDetails(productId) {
             const artisanData = await artisanResponse.json();
             
             if (artisanResponse.ok) {
-                displayProductDetails(product, artisanData.artisan);
+                await displayProductDetails(product, artisanData.artisan);
             } else {
-                displayProductDetails(product, null);
+                await displayProductDetails(product, null);
             }
         } else {
             document.getElementById('product-details').innerHTML = '<p>Product not found.</p>';
@@ -160,7 +160,7 @@ async function loadProductReviews(productId) {
     }
 }
 
-function displayProductDetails(product, artisan) {
+async function displayProductDetails(product, artisan) {
     const productDetails = document.getElementById('product-details');
     
     const ratingStars = generateStars(product.average_rating || 0);
@@ -171,6 +171,22 @@ function displayProductDetails(product, artisan) {
     // Check if user has purchased this product
     const userId = localStorage.getItem('userId');
     const hasPurchased = checkPurchaseStatus(product.id, userId);
+    
+    // Load product images
+    let productImages = [];
+    try {
+        const imagesResponse = await fetch(`/api/products/${product.id}/images`);
+        if (imagesResponse.ok) {
+            productImages = await imagesResponse.json();
+        }
+    } catch (error) {
+        console.error('Error loading product images:', error);
+    }
+    
+    // If no images from API, create a placeholder
+    if (productImages.length === 0) {
+        productImages = [{ image_path: 'https://via.placeholder.com/400x400?text=No+Image', is_primary: 1 }];
+    }
     
     const artisanInfo = artisan ? `
         <div class="artisan-info-section">
@@ -193,8 +209,18 @@ function displayProductDetails(product, artisan) {
     
     productDetails.innerHTML = `
         <div class="product-header">
-            <div class="product-image">
-                <img src="${product.img || 'https://via.placeholder.com/400x400'}" alt="${product.name}">
+            <div class="product-image-gallery">
+                <div class="main-image">
+                    <img src="${productImages[0].image_path}" alt="${product.name}" id="mainProductImage">
+                </div>
+                ${productImages.length > 1 ? `
+                <div class="image-thumbnails">
+                    ${productImages.map((img, index) => `
+                        <img src="${img.image_path}" alt="${product.name}" class="thumbnail ${img.is_primary ? 'active' : ''}" 
+                             onclick="changeMainImage('${img.image_path}', this)" data-index="${index}">
+                    `).join('')}
+                </div>
+                ` : ''}
             </div>
             <div class="product-info">
                 <h1>${product.name}</h1>
@@ -203,12 +229,14 @@ function displayProductDetails(product, artisan) {
                     <div class="stars">${ratingStars}</div>
                     <div class="rating-text">${ratingText}</div>
                 </div>
-                <div class="product-details">
-                    <h3>Product Details</h3>
-                    <p><strong>Category:</strong> ${product.category.replace('_', ' ')}</p>
-                    <p><strong>Product ID:</strong> ${product.id}</p>
+                <div class="product-sections">
+                    <div class="product-details">
+                        <h3>Product Details</h3>
+                        <p><strong>Category:</strong> ${product.category.replace('_', ' ')}</p>
+                        <p><strong>Product ID:</strong> ${product.id}</p>
+                    </div>
+                    ${artisanInfo}
                 </div>
-                ${artisanInfo}
                 <div class="action-buttons">
                     <button class="btn btn-primary" onclick="openPurchaseModal(${product.id}, ${product.price})">
                         Buy Now
@@ -325,12 +353,7 @@ function generateStars(rating) {
 
 // Helper functions to get artisan data
 function getArtisanPhoto(artisanId) {
-    const photos = {
-        2: "https://img.freepik.com/premium-photo/image-portrait-smiling-young-female-college-school-pretty-student-girl-solid-background_1021867-35983.jpg",
-        3: "https://tse2.mm.bing.net/th/id/OIP.BaWwoS1-Q01Had91bbauWwHaFj?w=960&h=720&rs=1&pid=ImgDetMain&o=7&rm=3",
-        4: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhpXfSnhf_YfKmNbNHubVsYnrvJbMSFg5E89hN0zCfE7EfRSsSgiMWNCaJz1Do_g4L3-Ap3nCtQy_sngHls3W3P1O9skoXWGDfXd7XnT3NIFVa3E1GRg3oODsXM5Aa-_7JXZkR9oIZumlK0xagYwr1sDDM6T4bAk2GCyHD6ajiI9cCFxYSGGp9xste5VzLs/s800/must-visit-shopping-destination-cebu.jpg"
-    };
-    return photos[artisanId] || "https://via.placeholder.com/200";
+    return `sellerimages/${artisanId}.jpg`;
 }
 
 function getArtisanCraft(artisanId) {
@@ -340,6 +363,20 @@ function getArtisanCraft(artisanId) {
         4: "Handcrafted silver and gemstone jewelry"
     };
     return crafts[artisanId] || "Handcrafted products";
+}
+
+// Function to change main image when thumbnail is clicked
+function changeMainImage(imagePath, thumbnailElement) {
+    const mainImage = document.getElementById('mainProductImage');
+    if (mainImage) {
+        mainImage.src = imagePath;
+    }
+    
+    // Update active thumbnail
+    document.querySelectorAll('.thumbnail').forEach(thumb => {
+        thumb.classList.remove('active');
+    });
+    thumbnailElement.classList.add('active');
 }
 
 // Close modal when clicking outside of it

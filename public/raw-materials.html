@@ -6,14 +6,14 @@
     <title>Raw Materials - Artisan Marketplace</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        .materials-grid, .sellers-grid {
+        .materials-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 20px;
             margin-top: 30px;
         }
         
-        .material-card, .seller-card {
+        .material-card {
             background: var(--glass-bg);
             backdrop-filter: blur(10px);
             border-radius: var(--border-radius-small);
@@ -25,12 +25,12 @@
             overflow: hidden;
         }
         
-        .material-card:hover, .seller-card:hover {
+        .material-card:hover {
             transform: translateY(-5px);
             box-shadow: var(--shadow-medium);
         }
         
-        .material-card img, .seller-card img {
+        .material-card img {
             width: 100%;
             height: 200px;
             object-fit: cover;
@@ -40,11 +40,11 @@
             transition: var(--transition);
         }
         
-        .material-card:hover img, .seller-card:hover img {
+        .material-card:hover img {
             filter: brightness(1);
         }
         
-        .material-card h3, .seller-card h3 {
+        .material-card h3 {
             color: var(--text-primary);
             margin-bottom: 15px;
             font-size: 1.3em;
@@ -128,12 +128,6 @@
             </div>
         </div>
         
-        <div class="sellers-section">
-            <h2>Raw Material Sellers</h2>
-            <div id="sellersGrid" class="sellers-grid">
-                <!-- Sellers will be loaded here -->
-            </div>
-        </div>
     </div>
     
     <script src="menu-bar.js"></script>

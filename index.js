@@ -1,6 +1,8 @@
 const express = require('express');
 const path = require('path');
 const db = require('./database');
+const multer = require('multer');
+const fs = require('fs');
 
 const app = express();
 const port = 3000;
@@ -14,8 +16,41 @@ const artisansData = [
 
 // Serve static files from the 'public' directory
 app.use(express.static(path.join(__dirname, 'public')));
+
+// Serve local images
+app.use('/sellerimages', express.static(path.join(__dirname, 'sellerimages')));
+app.use('/productimages', express.static(path.join(__dirname, 'productimages')));
+
 app.use(express.json());
 
+// Configure multer for file uploads
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        const uploadPath = file.fieldname === 'sellerImage' ? 'sellerimages' : 'productimages';
+        cb(null, uploadPath);
+    },
+    filename: function (req, file, cb) {
+        const productId = req.body.productId || 'temp';
+        const imageNumber = req.body.imageNumber || '1';
+        const extension = path.extname(file.originalname);
+        cb(null, `${productId}_${imageNumber}${extension}`);
+    }
+});
+
+const upload = multer({ storage: storage });
+
+// Image upload endpoint
+app.post('/api/upload-image', upload.single('image'), (req, res) => {
+    if (!req.file) {
+        return res.status(400).json({ message: 'No image file provided.' });
+    }
+    
+    const imagePath = req.file.path;
+    res.json({ 
+        message: 'Image uploaded successfully!', 
+        imagePath: imagePath 
+    });
+});
 
 // API endpoints
 app.get('/api/artisans', (req, res) => {
@@ -30,6 +65,37 @@ app.get('/api/products', (req, res) => {
         }
         res.json(rows);
     });
+});
+
+// Get product images endpoint
+app.get('/api/products/:id/images', (req, res) => {
+    const productId = req.params.id;
+    db.all('SELECT * FROM product_images WHERE product_id = ? ORDER BY is_primary DESC, created_at ASC', [productId], (err, rows) => {
+        if (err) {
+            res.status(500).json({ message: 'Failed to fetch product images.', error: err.message });
+            return;
+        }
+        res.json(rows);
+    });
+});
+
+// Add product images endpoint
+app.post('/api/products/:id/images', (req, res) => {
+    const productId = req.params.id;
+    const { images } = req.body;
+    
+    if (!images || images.length === 0) {
+        res.status(400).json({ message: 'No images provided.' });
+        return;
+    }
+    
+    const imgStmt = db.prepare('INSERT INTO product_images (product_id, image_path, is_primary) VALUES (?, ?, ?)');
+    images.forEach((imagePath, index) => {
+        imgStmt.run(productId, imagePath, index === 0 ? 1 : 0);
+    });
+    imgStmt.finalize();
+    
+    res.json({ message: 'Images added successfully!' });
 });
 
 // Login endpoint
@@ -103,17 +169,29 @@ app.post('/api/signup', (req, res) => {
 
 // Add product endpoint
 app.post('/api/products', (req, res) => {
-    const { name, category, price, img, artisan_id } = req.body;
+    const { name, category, price, artisan_id, images } = req.body;
 
     // In a real application, you would verify the token and artisan_id here
     // For now, we trust the artisan_id sent from the client-side (add-product.js)
 
-    db.run('INSERT INTO products (name, category, price, img, artisan_id) VALUES (?, ?, ?, ?, ?)', [name, category, price, img, artisan_id], function(err) {
+    db.run('INSERT INTO products (name, category, price, artisan_id) VALUES (?, ?, ?, ?)', [name, category, price, artisan_id], function(err) {
         if (err) {
             res.status(500).json({ message: 'Failed to add product to database.', error: err.message });
             return;
         }
-        res.status(201).json({ message: 'Product added successfully!', productId: this.lastID });
+        
+        const productId = this.lastID;
+        
+        // Insert multiple images if provided
+        if (images && images.length > 0) {
+            const imgStmt = db.prepare('INSERT INTO product_images (product_id, image_path, is_primary) VALUES (?, ?, ?)');
+            images.forEach((imagePath, index) => {
+                imgStmt.run(productId, imagePath, index === 0 ? 1 : 0);
+            });
+            imgStmt.finalize();
+        }
+        
+        res.status(201).json({ message: 'Product added successfully!', productId: productId });
     });
 });
 

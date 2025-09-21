@@ -118,7 +118,7 @@ function displayArtisanProducts(products) {
         
         return `
             <div class="product-card" onclick="window.location.href='product-detail.html?id=${product.id}'" style="cursor: pointer;">
-                <img src="${product.img || 'https://via.placeholder.com/200'}" alt="${product.name}">
+                <img src="productimages/${product.id}_1.jpg" alt="${product.name}">
                 <h3>${product.name}</h3>
                 <div class="price">$${product.price}</div>
                 <div class="product-rating">
@@ -151,12 +151,7 @@ function generateStars(rating) {
 
 // Helper functions to get artisan data
 function getArtisanPhoto(artisanId) {
-    const photos = {
-        2: "https://img.freepik.com/premium-photo/image-portrait-smiling-young-female-college-school-pretty-student-girl-solid-background_1021867-35983.jpg",
-        3: "https://tse2.mm.bing.net/th/id/OIP.BaWwoS1-Q01Had91bbauWwHaFj?w=960&h=720&rs=1&pid=ImgDetMain&o=7&rm=3",
-        4: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhpXfSnhf_YfKmNbNHubVsYnrvJbMSFg5E89hN0zCfE7EfRSsSgiMWNCaJz1Do_g4L3-Ap3nCtQy_sngHls3W3P1O9skoXWGDfXd7XnT3NIFVa3E1GRg3oODsXM5Aa-_7JXZkR9oIZumlK0xagYwr1sDDM6T4bAk2GCyHD6ajiI9cCFxYSGGp9xste5VzLs/s800/must-visit-shopping-destination-cebu.jpg"
-    };
-    return photos[artisanId] || "https://via.placeholder.com/200";
+    return `sellerimages/${artisanId}.jpg`;
 }
 
 function getArtisanBio(artisanId) {

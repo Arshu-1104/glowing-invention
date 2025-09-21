@@ -78,7 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="products-grid">
                 ${filteredProducts.length ? filteredProducts.map(product => `
                     <div class="product-card" data-category="${product.category}" onclick="window.location.href='product-detail.html?id=${product.id}'">
-                        <img src=${product.img || 'https://via.placeholder.com/150'} alt=${product.name} />
+                        <img src="https://via.placeholder.com/150" alt="${product.name}" data-product-id="${product.id}" class="product-image" />
                         <h3>${product.name}</h3>
                         <p>$${product.price}</p>
                         <div class="product-rating">
@@ -103,6 +103,11 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
 
+        // Load product images after rendering
+        setTimeout(() => {
+            loadProductImages();
+        }, 100);
+
         return productsContainer;
     };
 
@@ -117,13 +122,19 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="products-grid">
                 ${recommendedProducts.length ? recommendedProducts.map(product => `
                     <div class="product-card">
-                        <img src=${product.img || 'https://via.placeholder.com/150'} alt=${product.name} />
+                        <img src="https://via.placeholder.com/150" alt="${product.name}" data-product-id="${product.id}" class="product-image" />
                         <h3>${product.name}</h3>
                         <p>$${product.price}</p>
                     </div>
                 `).join('') : `<p class="no-products-message">Click on a product to see recommendations.</p>`}
             </div>
         `;
+        
+        // Load product images for recommendations
+        setTimeout(() => {
+            loadProductImages();
+        }, 100);
+        
         return recommendationsContainer;
     };
 
@@ -249,12 +260,42 @@ function generateStars(rating) {
 
 // Helper functions to get artisan data
 function getArtisanPhoto(artisanId) {
-    const photos = {
-        2: "https://img.freepik.com/premium-photo/image-portrait-smiling-young-female-college-school-pretty-student-girl-solid-background_1021867-35983.jpg",
-        3: "https://tse2.mm.bing.net/th/id/OIP.BaWwoS1-Q01Had91bbauWwHaFj?w=960&h=720&rs=1&pid=ImgDetMain&o=7&rm=3",
-        4: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhpXfSnhf_YfKmNbNHubVsYnrvJbMSFg5E89hN0zCfE7EfRSsSgiMWNCaJz1Do_g4L3-Ap3nCtQy_sngHls3W3P1O9skoXWGDfXd7XnT3NIFVa3E1GRg3oODsXM5Aa-_7JXZkR9oIZumlK0xagYwr1sDDM6T4bAk2GCyHD6ajiI9cCFxYSGGp9xste5VzLs/s800/must-visit-shopping-destination-cebu.jpg"
-    };
-    return photos[artisanId] || "https://via.placeholder.com/200";
+    return `sellerimages/${artisanId}.jpg`;
+}
+
+// Function to get primary image for a product
+async function getProductPrimaryImage(productId) {
+    try {
+        console.log(`Fetching images for product ${productId}`);
+        const response = await fetch(`/api/products/${productId}/images`);
+        if (response.ok) {
+            const images = await response.json();
+            console.log(`Images for product ${productId}:`, images);
+            const primaryImage = images.find(img => img.is_primary) || images[0];
+            const imagePath = primaryImage ? primaryImage.image_path : 'https://via.placeholder.com/150';
+            console.log(`Selected image path: ${imagePath}`);
+            return imagePath;
+        } else {
+            console.error(`Failed to fetch images for product ${productId}:`, response.status);
+        }
+    } catch (error) {
+        console.error('Error fetching product image:', error);
+    }
+    return 'https://via.placeholder.com/150';
+}
+
+// Function to load product images for all products on the page
+async function loadProductImages() {
+    const productImages = document.querySelectorAll('.product-image[data-product-id]');
+    console.log(`Found ${productImages.length} product images to load`);
+    
+    for (const img of productImages) {
+        const productId = img.getAttribute('data-product-id');
+        console.log(`Loading image for product ${productId}`);
+        const imagePath = await getProductPrimaryImage(productId);
+        console.log(`Setting image src to: ${imagePath}`);
+        img.src = imagePath;
+    }
 }
 
 function getArtisanBio(artisanId) {

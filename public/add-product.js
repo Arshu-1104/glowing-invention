@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const productName = document.getElementById('productName').value;
         const category = document.getElementById('category').value;
         const price = parseFloat(document.getElementById('price').value);
-        const imageUrl = document.getElementById('imageUrl').value;
+        const imageFiles = document.getElementById('imageFiles').files;
 
         if (!productName || !category || isNaN(price)) {
             messageElement.textContent = 'Please fill in all required fields.';
@@ -34,27 +34,67 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         try {
+            // Create product first to get the product ID
             const response = await fetch('/api/products', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('token')}` // Send token for authentication
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
                 },
-                body: JSON.stringify({ name: productName, category, price, img: imageUrl, artisan_id: userId }),
+                body: JSON.stringify({ 
+                    name: productName, 
+                    category, 
+                    price, 
+                    artisan_id: userId
+                }),
             });
 
             const data = await response.json();
 
-            if (response.ok) {
-                messageElement.textContent = data.message || 'Product added successfully!';
-                messageElement.classList.add('success');
-                messageElement.classList.remove('error');
-                addProductForm.reset();
-            } else {
+            if (!response.ok) {
                 messageElement.textContent = data.message || 'Failed to add product.';
                 messageElement.classList.add('error');
                 messageElement.classList.remove('success');
+                return;
             }
+
+            // Upload images with the correct product ID
+            const imagePaths = [];
+            if (imageFiles.length > 0) {
+                for (let i = 0; i < imageFiles.length; i++) {
+                    const formData = new FormData();
+                    formData.append('image', imageFiles[i]);
+                    formData.append('productId', data.productId);
+                    formData.append('imageNumber', i + 1);
+                    
+                    const uploadResponse = await fetch('/api/upload-image', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    
+                    if (uploadResponse.ok) {
+                        const uploadData = await uploadResponse.json();
+                        imagePaths.push(uploadData.imagePath);
+                    }
+                }
+
+                // Update product with image paths
+                if (imagePaths.length > 0) {
+                    const updateResponse = await fetch(`/api/products/${data.productId}/images`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${localStorage.getItem('token')}`
+                        },
+                        body: JSON.stringify({ images: imagePaths }),
+                    });
+                }
+            }
+
+            messageElement.textContent = 'Product added successfully!';
+            messageElement.classList.add('success');
+            messageElement.classList.remove('error');
+            addProductForm.reset();
         } catch (error) {
             console.error('Error adding product:', error);
             messageElement.textContent = 'An error occurred. Please try again later.';

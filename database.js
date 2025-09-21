@@ -15,7 +15,8 @@ db.serialize(() => {
         password TEXT NOT NULL,
         role TEXT NOT NULL,
         average_rating REAL DEFAULT 0,
-        total_reviews INTEGER DEFAULT 0
+        total_reviews INTEGER DEFAULT 0,
+        image_path TEXT DEFAULT NULL
     )`, (err) => {
         if (err) {
             console.error("Error creating users table:", err.message);
@@ -25,11 +26,11 @@ db.serialize(() => {
                 if (err) {
                     console.error("Error checking users table count:", err.message);
                 } else if (row.count === 0) {
-                    const stmt = db.prepare('INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)');
-                    stmt.run('Alice', 'alice@example.com', 'password123', 'user');
-                    stmt.run('Asha Patel', 'asha@example.com', 'artisanpass', 'artisan');
-                    stmt.run('Raju Singh', 'raju@example.com', 'artisanpass', 'artisan');
-                    stmt.run('RawMat Seller', 'seller@example.com', 'sellerpass', 'seller');
+                    const stmt = db.prepare('INSERT INTO users (name, email, password, role, image_path) VALUES (?, ?, ?, ?, ?)');
+                    stmt.run('Alice', 'alice@example.com', 'password123', 'user', 'sellerimages/1.jpg');
+                    stmt.run('Asha Patel', 'asha@example.com', 'artisanpass', 'artisan', 'sellerimages/2.jpg');
+                    stmt.run('Raju Singh', 'raju@example.com', 'artisanpass', 'artisan', 'sellerimages/3.jpg');
+                    stmt.run('RawMat Seller', 'seller@example.com', 'sellerpass', 'seller', 'sellerimages/5.jpg');
                     stmt.finalize();
                     console.log('Initial user data inserted.');
                 }
@@ -42,7 +43,6 @@ db.serialize(() => {
         name TEXT NOT NULL,
         category TEXT NOT NULL,
         price REAL NOT NULL,
-        img TEXT,
         artisan_id INTEGER,
         average_rating REAL DEFAULT 0,
         total_reviews INTEGER DEFAULT 0,
@@ -56,17 +56,55 @@ db.serialize(() => {
                 if (err) {
                     console.error("Error checking products table count:", err.message);
                 } else if (row.count === 0) {
-                    const stmt = db.prepare('INSERT INTO products (name, category, price, img, artisan_id) VALUES (?, ?, ?, ?, ?)');
-                    stmt.run('Block Printed Fabric', 'textiles', 30, 'https://i.pinimg.com/originals/5a/8b/c2/5a8bc2dd2110dcfaf84f3d3ef3e13a29.jpg', 2);
-                    stmt.run('Carved Wooden Table', 'woodwork', 150, 'https://images.unsplash.com/photo-1505692977188-d7f99dc741b9?auto=format&fit=crop&w=800&q=60', 3);
-                    stmt.run('Silver Gemstone Necklace', 'jewelry', 80, 'https://images.unsplash.com/photo-1556228727-9c29ff077af9?auto=format&fit=crop&w=800&q=60', 4);
-                    stmt.run('Handwoven Textile Scarf', 'textiles', 25, 'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=800&q=60', 2);
-                    stmt.run('Premium Cotton Yarn', 'raw_material', 15, 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=800&q=60', 5);
-                    stmt.run('Hardwood Blocks', 'raw_material', 45, 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=800&q=60', 5);
+                    const stmt = db.prepare('INSERT INTO products (name, category, price, artisan_id) VALUES (?, ?, ?, ?)');
+                    stmt.run('Block Printed Fabric', 'textiles', 30, 2);
+                    stmt.run('Carved Wooden Table', 'woodwork', 150, 3);
+                    stmt.run('Silver Gemstone Necklace', 'jewelry', 80, 4);
+                    stmt.run('Handwoven Textile Scarf', 'textiles', 25, 2);
+                    stmt.run('Premium Cotton Yarn', 'raw_material', 15, 5);
+                    stmt.run('Hardwood Blocks', 'raw_material', 45, 5);
                     stmt.finalize();
+                    
+                    // Insert multiple images for products
+                    const imgStmt = db.prepare('INSERT INTO product_images (product_id, image_path, is_primary) VALUES (?, ?, ?)');
+                    // Product 1 - Block Printed Fabric
+                    imgStmt.run(1, 'productimages/1_1.jpg', 1);
+                    imgStmt.run(1, 'productimages/1_2.jpg', 0);
+                    imgStmt.run(1, 'productimages/1_3.jpg', 0);
+                    // Product 2 - Carved Wooden Table
+                    imgStmt.run(2, 'productimages/2_1.jpg', 1);
+                    imgStmt.run(2, 'productimages/2_2.jpg', 0);
+                    imgStmt.run(2, 'productimages/2_3.jpg', 0);
+                    // Product 3 - Silver Gemstone Necklace
+                    imgStmt.run(3, 'productimages/3_1.jpg', 1);
+                    imgStmt.run(3, 'productimages/3_2.jpg', 0);
+                    // Product 4 - Handwoven Textile Scarf
+                    imgStmt.run(4, 'productimages/4_1.jpg', 1);
+                    imgStmt.run(4, 'productimages/4_2.jpg', 0);
+                    // Product 5 - Premium Cotton Yarn
+                    imgStmt.run(5, 'productimages/5_1.jpg', 1);
+                    imgStmt.run(5, 'productimages/5_2.jpg', 0);
+                    // Product 6 - Hardwood Blocks
+                    imgStmt.run(6, 'productimages/6_1.jpg', 1);
+                    imgStmt.run(6, 'productimages/6_2.jpg', 0);
+                    imgStmt.finalize();
                     console.log('Initial product data inserted.');
                 }
             });
+        }
+    });
+
+    // Create product_images table for multiple images per product
+    db.run(`CREATE TABLE IF NOT EXISTS product_images (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        product_id INTEGER NOT NULL,
+        image_path TEXT NOT NULL,
+        is_primary BOOLEAN DEFAULT 0,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+    )`, (err) => {
+        if (err) {
+            console.error("Error creating product_images table:", err.message);
         }
     });
 
