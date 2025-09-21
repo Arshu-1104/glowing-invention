@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Queries - Artisan Marketplace</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .queries-container {
+            max-width: 1000px;
+        }
+        
+        .queries-list {
+            display: grid;
+            gap: 20px;
+        }
+        
+        .query-item {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border-radius: var(--border-radius-small);
+            padding: 25px;
+            border: 1px solid var(--glass-border);
+            transition: var(--transition);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .query-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+            opacity: 0;
+            transition: var(--transition);
+        }
+        
+        .query-item:hover::before {
+            opacity: 1;
+        }
+        
+        .query-item:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-medium);
+        }
+        
+        .query-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .query-customer {
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 1.2em;
+        }
+        
+        .query-time {
+            color: var(--text-secondary);
+            font-size: 0.9em;
+        }
+        
+        .query-preview {
+            color: var(--text-muted);
+            margin-bottom: 10px;
+            font-style: italic;
+        }
+        
+        .query-status {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: var(--border-radius-large);
+            font-size: 0.9em;
+            font-weight: 600;
+        }
+        
+        .status-new {
+            background: var(--primary-gradient);
+            color: white;
+        }
+        
+        .status-replied {
+            background: var(--glass-bg);
+            color: var(--text-primary);
+            border: 1px solid var(--glass-border);
+        }
+    </style>
+</head>
+<body>
+    <div id="menuBarContainer"></div>
+    <div class="queries-container">
+        <a href="/" class="back-button">← Back to Home</a>
+        
+        <div class="queries-header">
+            <h1>Product Queries</h1>
+            <p>Manage customer inquiries and chat conversations</p>
+        </div>
+        
+        <div class="queries-list" id="queriesList">
+            <div class="no-queries">No customer queries yet. Customers will appear here when they start a chat.</div>
+        </div>
+    </div>
+    
+    <script src="menu-bar.js"></script>
+    <script src="product-queries.js"></script>
+</body>
+</html>

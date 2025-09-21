@@ -1,0 +1,261 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Artisan Marketplace - Login</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: var(--primary-gradient);
+            background-attachment: fixed;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--text-primary);
+            margin: 0;
+            padding: 20px;
+        }
+        
+        .auth-container {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border-radius: var(--border-radius);
+            padding: 40px;
+            max-width: 450px;
+            width: 100%;
+            box-shadow: var(--shadow-medium);
+            border: 1px solid var(--glass-border);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .auth-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+            opacity: 0.8;
+            z-index: -1;
+        }
+        
+        .auth-container h1 {
+            margin-bottom: 10px;
+            color: var(--text-primary);
+            font-size: 2.5em;
+            font-weight: 700;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .auth-container .subtitle {
+            color: var(--text-secondary);
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+        
+        .auth-container label {
+            display: block;
+            text-align: left;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 1.1em;
+        }
+        
+        .auth-container input[type="text"],
+        .auth-container input[type="email"],
+        .auth-container input[type="password"],
+        .auth-container select {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: var(--border-radius-small);
+            border: 1px solid var(--glass-border);
+            background: var(--glass-bg);
+            color: var(--text-primary);
+            font-size: 1em;
+            outline: none;
+            transition: var(--transition);
+            backdrop-filter: blur(10px);
+        }
+        
+        .auth-container input:focus,
+        .auth-container select:focus {
+            border-color: var(--glass-hover);
+            background: var(--glass-hover);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .auth-container input::placeholder {
+            color: var(--text-muted);
+        }
+        
+        .auth-container button {
+            width: 100%;
+            padding: 15px;
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius-small);
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: 600;
+            transition: var(--transition);
+            box-shadow: var(--shadow-light);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .auth-container button:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-medium);
+        }
+        
+        .auth-container button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .auth-container button:hover::before {
+            left: 100%;
+        }
+        
+        .auth-container .error-message {
+            color: #f87171;
+            margin-top: 15px;
+            font-weight: 600;
+        }
+        
+        .auth-container .success-message {
+            color: #4ade80;
+            margin-top: 15px;
+            font-weight: 600;
+        }
+        
+        .auth-toggle {
+            margin-top: 25px;
+            padding-top: 25px;
+            border-top: 1px solid var(--glass-border);
+        }
+        
+        .auth-toggle p {
+            color: var(--text-muted);
+            margin-bottom: 15px;
+        }
+        
+        .auth-toggle button {
+            background: var(--glass-bg);
+            color: var(--text-primary);
+            border: 1px solid var(--glass-border);
+            font-size: 1em;
+            padding: 12px 24px;
+        }
+        
+        .auth-toggle button:hover {
+            background: var(--glass-hover);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            margin-bottom: 8px;
+        }
+        
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <h1>Welcome</h1>
+        <p class="subtitle">Sign in to your account or create a new one</p>
+        
+        <!-- Login Form -->
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" placeholder="Enter your email" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="Enter your password" required>
+            </div>
+
+            <div class="form-group">
+                <label for="role">Account Type</label>
+                <select id="role" name="role">
+                    <option value="user">Customer</option>
+                    <option value="artisan">Artisan</option>
+                    <option value="seller">Raw Material Seller</option>
+                </select>
+            </div>
+
+            <button type="submit">Sign In</button>
+            <p id="errorMessage" class="error-message"></p>
+        </form>
+        
+        <!-- Signup Form -->
+        <form id="signupForm" class="hidden">
+            <div class="form-group">
+                <label for="signupName">Full Name</label>
+                <input type="text" id="signupName" name="name" placeholder="Enter your full name" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="signupEmail">Email Address</label>
+                <input type="email" id="signupEmail" name="email" placeholder="Enter your email" required>
+            </div>
+
+            <div class="form-group">
+                <label for="signupPassword">Password</label>
+                <input type="password" id="signupPassword" name="password" placeholder="Create a password" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="signupConfirmPassword">Confirm Password</label>
+                <input type="password" id="signupConfirmPassword" name="confirmPassword" placeholder="Confirm your password" required>
+            </div>
+
+            <div class="form-group">
+                <label for="signupRole">Account Type</label>
+                <select id="signupRole" name="role">
+                    <option value="user">Customer</option>
+                    <option value="artisan">Artisan</option>
+                    <option value="seller">Raw Material Seller</option>
+                </select>
+            </div>
+
+            <button type="submit">Create Account</button>
+            <p id="signupErrorMessage" class="error-message"></p>
+            <p id="signupSuccessMessage" class="success-message"></p>
+        </form>
+        
+        <div class="auth-toggle">
+            <p id="toggleText">Don't have an account?</p>
+            <button type="button" id="toggleButton" onclick="toggleAuthForm()">Create New Account</button>
+        </div>
+    </div>
+    <script src="login.js"></script>
+</body>
+</html>

@@ -1,0 +1,39 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Artisan Marketplace</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="menuBarContainer"></div>
+    <div id="root"></div>
+    
+    <!-- User Info Modal -->
+    <div id="userInfoModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeUserInfoModal()">&times;</span>
+            <h2>Profile Information</h2>
+            <div id="userInfoContent">
+                <!-- User info will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Shopping History Modal -->
+    <div id="shoppingHistoryModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeShoppingHistoryModal()">&times;</span>
+            <h2>Shopping History</h2>
+            <div id="shoppingHistoryContent">
+                <!-- Shopping history will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <script src="menu-bar.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

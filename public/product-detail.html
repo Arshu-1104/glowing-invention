@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Details - Artisan Marketplace</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            background-image: url("https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=1470&q=80");
+            background-size: cover;
+            background-position: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #fff;
+            padding: 20px;
+        }
+        .container {
+            background-color: rgba(85, 55, 0, 0.9);
+            border-radius: 10px;
+            padding: 40px;
+            max-width: 1000px;
+            margin: 0 auto;
+            box-shadow: 0 0 30px rgba(43, 122, 11, 0.8);
+        }
+        .product-header {
+            display: flex;
+            gap: 40px;
+            margin-bottom: 40px;
+            align-items: flex-start;
+        }
+        .product-image {
+            flex: 1;
+            max-width: 400px;
+        }
+        .product-image img {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+        }
+        .product-info {
+            flex: 1;
+            padding: 20px;
+        }
+        .product-info h1 {
+            color: #f9e79f;
+            margin-bottom: 20px;
+            font-size: 2.5em;
+        }
+        .product-price {
+            color: #f7dc6f;
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .product-rating {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .product-rating .stars {
+            color: #f7dc6f;
+            font-size: 1.5em;
+            margin-right: 15px;
+        }
+        .product-rating .rating-text {
+            color: #e8d68a;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+        .product-details {
+            background: #5a3e00;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .product-details h3 {
+            color: #f9e79f;
+            margin-bottom: 15px;
+        }
+        .product-details p {
+            color: #ddc87e;
+            margin: 10px 0;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        .btn-primary {
+            background: #f7dc6f;
+            color: #5a3e00;
+        }
+        .btn-primary:hover {
+            background: #e0c65e;
+        }
+        .btn-secondary {
+            background: #5a3e00;
+            color: #f7dc6f;
+            border: 2px solid #f7dc6f;
+        }
+        .btn-secondary:hover {
+            background: #f7dc6f;
+            color: #5a3e00;
+        }
+        .btn:disabled {
+            background: #666;
+            color: #999;
+            cursor: not-allowed;
+        }
+        .back-button {
+            background: #f7dc6f;
+            color: #5a3e00;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .back-button:hover {
+            background: #e0c65e;
+        }
+        .reviews-section {
+            margin-top: 40px;
+        }
+        .reviews-section h2 {
+            color: #f9e79f;
+            margin-bottom: 20px;
+        }
+        .review-item {
+            background: #5a3e00;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .review-user {
+            color: #f9e79f;
+            font-weight: bold;
+        }
+        .review-rating {
+            color: #f7dc6f;
+        }
+        .review-text {
+            color: #ddc87e;
+            line-height: 1.5;
+        }
+        .review-date {
+            color: #999;
+            font-size: 0.9em;
+        }
+        .purchase-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+        .purchase-modal-content {
+            background-color: #5a3e00;
+            margin: 10% auto;
+            padding: 30px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
+            position: relative;
+        }
+        .close {
+            color: #f7dc6f;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close:hover {
+            color: #e0c65e;
+        }
+        .purchase-form label {
+            display: block;
+            color: #f9e79f;
+            margin-bottom: 5px;
+        }
+        .purchase-form input, .purchase-form select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+        .purchase-form button {
+            background: #f7dc6f;
+            color: #5a3e00;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            width: 100%;
+        }
+        .purchase-form button:hover {
+            background: #e0c65e;
+        }
+        .message {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+            font-weight: bold;
+        }
+        .success {
+            background: rgba(191, 255, 191, 0.2);
+            color: #bfffbf;
+        }
+        .error {
+            background: rgba(255, 179, 179, 0.2);
+            color: #ffb3b3;
+        }
+        .artisan-info-section {
+            background: #5a3e00;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .artisan-info-section h3 {
+            color: #f9e79f;
+            margin-bottom: 15px;
+        }
+        .artisan-link {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .artisan-thumbnail {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #f7dc6f;
+        }
+        .artisan-details p {
+            color: #ddc87e;
+            margin: 5px 0;
+        }
+        .artisan-link-text {
+            color: #f7dc6f;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .artisan-link-text:hover {
+            color: #e0c65e;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div id="menuBarContainer"></div>
+    <div class="container">
+        <button class="back-button" onclick="window.location.href='/'">← Back to Home</button>
+        
+        <div id="product-details">
+            <!-- Product details will be loaded here -->
+        </div>
+        
+        <div class="reviews-section">
+            <h2>Customer Reviews</h2>
+            <div id="reviews-list">
+                <!-- Reviews will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Purchase Modal -->
+    <div id="purchaseModal" class="purchase-modal">
+        <div class="purchase-modal-content">
+            <span class="close" onclick="closePurchaseModal()">&times;</span>
+            <h2>Purchase Product</h2>
+            <form id="purchaseForm" class="purchase-form">
+                <input type="hidden" id="purchaseProductId">
+                <input type="hidden" id="purchaseProductPrice">
+                
+                <label for="quantity">Quantity:</label>
+                <input type="number" id="quantity" min="1" value="1" required>
+                
+                <label for="shippingAddress">Shipping Address:</label>
+                <input type="text" id="shippingAddress" placeholder="Enter your address" required>
+                
+                <label for="paymentMethod">Payment Method:</label>
+                <select id="paymentMethod" required>
+                    <option value="">Select Payment Method</option>
+                    <option value="credit_card">Credit Card</option>
+                    <option value="debit_card">Debit Card</option>
+                    <option value="paypal">PayPal</option>
+                    <option value="bank_transfer">Bank Transfer</option>
+                </select>
+                
+                <div id="totalPrice" style="color: #f7dc6f; font-size: 1.2em; font-weight: bold; margin: 15px 0;"></div>
+                
+                <button type="submit">Complete Purchase</button>
+                <div id="purchaseMessage" class="message"></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Rating Modal -->
+    <div id="ratingModal" class="purchase-modal">
+        <div class="purchase-modal-content">
+            <span class="close" onclick="closeRatingModal()">&times;</span>
+            <h2>Rate This Product</h2>
+            <form id="ratingForm" class="purchase-form">
+                <input type="hidden" id="ratingProductId">
+                
+                <label for="rating">Rating:</label>
+                <select id="rating" required>
+                    <option value="">Select Rating</option>
+                    <option value="5">5 Stars - Excellent</option>
+                    <option value="4">4 Stars - Very Good</option>
+                    <option value="3">3 Stars - Good</option>
+                    <option value="2">2 Stars - Fair</option>
+                    <option value="1">1 Star - Poor</option>
+                </select>
+                
+                <label for="reviewText">Review (Optional):</label>
+                <textarea id="reviewText" rows="4" placeholder="Share your experience with this product..."></textarea>
+                
+                <button type="submit">Submit Review</button>
+                <div id="ratingMessage" class="message"></div>
+            </form>
+        </div>
+    </div>
+    
+    <script src="menu-bar.js"></script>
+    <script src="product-detail.js"></script>
+</body>
+</html>

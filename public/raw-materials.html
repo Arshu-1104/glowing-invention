@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Raw Materials - Artisan Marketplace</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .materials-grid, .sellers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .material-card, .seller-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border-radius: var(--border-radius-small);
+            padding: 25px;
+            box-shadow: var(--shadow-light);
+            border: 1px solid var(--glass-border);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .material-card:hover, .seller-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-medium);
+        }
+        
+        .material-card img, .seller-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: var(--border-radius-small);
+            margin-bottom: 15px;
+            filter: brightness(0.9);
+            transition: var(--transition);
+        }
+        
+        .material-card:hover img, .seller-card:hover img {
+            filter: brightness(1);
+        }
+        
+        .material-card h3, .seller-card h3 {
+            color: var(--text-primary);
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        
+        .material-card .price {
+            color: var(--text-secondary);
+            font-weight: bold;
+            font-size: 1.2em;
+            margin-bottom: 15px;
+        }
+        
+        .seller-info, .seller-stats {
+            background: var(--glass-bg);
+            padding: 15px;
+            border-radius: var(--border-radius-small);
+            margin-top: 15px;
+            border: 1px solid var(--glass-border);
+        }
+        
+        .seller-info p, .seller-stats p {
+            margin: 5px 0;
+            color: var(--text-muted);
+        }
+        
+        .contact-seller-btn {
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: var(--border-radius-large);
+            cursor: pointer;
+            font-weight: 600;
+            width: 100%;
+            margin-top: 15px;
+            transition: var(--transition);
+        }
+        
+        .contact-seller-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-medium);
+        }
+    </style>
+</head>
+<body>
+    <div id="menuBarContainer"></div>
+    <div class="container">
+        <button class="back-button" onclick="window.location.href='/'">← Back to Home</button>
+        
+        <div class="page-header">
+            <h1>Raw Materials Marketplace</h1>
+            <p>Find high-quality raw materials from trusted sellers</p>
+        </div>
+        
+        <div class="search-section">
+            <h2>Search Raw Materials</h2>
+            <div class="search-controls">
+                <input type="text" id="searchInput" placeholder="Search materials...">
+                <select id="categoryFilter">
+                    <option value="">All Categories</option>
+                    <option value="textiles">Textiles</option>
+                    <option value="woodwork">Woodwork</option>
+                    <option value="jewelry">Jewelry</option>
+                    <option value="raw_material">Raw Materials</option>
+                </select>
+                <select id="priceFilter">
+                    <option value="">Any Price</option>
+                    <option value="0-25">Under $25</option>
+                    <option value="25-50">$25 - $50</option>
+                    <option value="50-100">$50 - $100</option>
+                    <option value="100+">Over $100</option>
+                </select>
+                <button onclick="searchMaterials()">Search</button>
+            </div>
+        </div>
+        
+        <div class="materials-section">
+            <h2>Available Raw Materials</h2>
+            <div id="materialsGrid" class="materials-grid">
+                <!-- Materials will be loaded here -->
+            </div>
+        </div>
+        
+        <div class="sellers-section">
+            <h2>Raw Material Sellers</h2>
+            <div id="sellersGrid" class="sellers-grid">
+                <!-- Sellers will be loaded here -->
+            </div>
+        </div>
+    </div>
+    
+    <script src="menu-bar.js"></script>
+    <script src="raw-materials.js"></script>
+</body>
+</html>

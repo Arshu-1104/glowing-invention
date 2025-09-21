@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Artisan Details - Artisan Marketplace</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .artisan-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: var(--glass-bg);
+            border-radius: var(--border-radius-small);
+            border: 1px solid var(--glass-border);
+        }
+        .artisan-photo {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 30px;
+            border: 3px solid #f7dc6f;
+        }
+        .artisan-info h1 {
+            margin: 0 0 10px 0;
+            color: #f9e79f;
+        }
+        .artisan-info p {
+            margin: 5px 0;
+            color: #ddc87e;
+        }
+        .rating-display {
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+        }
+        .stars {
+            color: #f7dc6f;
+            font-size: 1.2em;
+            margin-right: 10px;
+        }
+        .rating-text {
+            color: #e8d68a;
+            font-weight: bold;
+        }
+        .products-section {
+            margin-top: 40px;
+        }
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .product-card {
+            background: #5a3e00;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+        }
+        .product-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        .product-card h3 {
+            color: #fff;
+            margin-bottom: 10px;
+        }
+        .product-card .price {
+            color: #f7dc6f;
+            font-weight: bold;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+        .product-rating {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+        .product-rating .stars {
+            font-size: 1em;
+            margin-right: 5px;
+        }
+        .product-rating .rating-count {
+            color: #ddc87e;
+            font-size: 0.9em;
+        }
+        .review-button {
+            background: #f7dc6f;
+            color: #5a3e00;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .review-button:hover {
+            background: #e0c65e;
+        }
+        .back-button {
+            background: #f7dc6f;
+            color: #5a3e00;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .back-button:hover {
+            background: #e0c65e;
+        }
+        .review-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+        .review-modal-content {
+            background-color: #5a3e00;
+            margin: 10% auto;
+            padding: 30px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
+            position: relative;
+        }
+        .close {
+            color: #f7dc6f;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close:hover {
+            color: #e0c65e;
+        }
+        .review-form label {
+            display: block;
+            color: #f9e79f;
+            margin-bottom: 5px;
+        }
+        .review-form input, .review-form textarea, .review-form select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+        .review-form button {
+            background: #f7dc6f;
+            color: #5a3e00;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            width: 100%;
+        }
+        .review-form button:hover {
+            background: #e0c65e;
+        }
+    </style>
+</head>
+<body>
+    <div id="menuBarContainer"></div>
+    <div class="container">
+        <button class="back-button" onclick="window.location.href='/'">← Back to Home</button>
+        
+        <div id="artisan-details">
+            <!-- Artisan details will be loaded here -->
+        </div>
+        
+        <div class="products-section">
+            <h2>Products by this Artisan</h2>
+            <div id="artisan-products" class="products-grid">
+                <!-- Products will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Review Modal -->
+    <div id="reviewModal" class="review-modal">
+        <div class="review-modal-content">
+            <span class="close" onclick="closeReviewModal()">&times;</span>
+            <h2>Write a Review</h2>
+            <form id="reviewForm" class="review-form">
+                <input type="hidden" id="reviewProductId">
+                <label for="reviewRating">Rating:</label>
+                <select id="reviewRating" required>
+                    <option value="">Select Rating</option>
+                    <option value="5">5 Stars - Excellent</option>
+                    <option value="4">4 Stars - Very Good</option>
+                    <option value="3">3 Stars - Good</option>
+                    <option value="2">2 Stars - Fair</option>
+                    <option value="1">1 Star - Poor</option>
+                </select>
+                
+                <label for="reviewText">Review:</label>
+                <textarea id="reviewText" rows="4" placeholder="Share your experience with this product..."></textarea>
+                
+                <button type="submit">Submit Review</button>
+            </form>
+        </div>
+    </div>
+    
+    <script src="menu-bar.js"></script>
+    <script src="artisan-detail.js"></script>
+</body>
+</html>

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Artisan Chat - Artisan Marketplace</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .chat-container {
+            height: 80vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .chat-header {
+            background: var(--glass-bg);
+            padding: 20px;
+            border-radius: var(--border-radius-small);
+            margin-bottom: 20px;
+            text-align: center;
+            border: 1px solid var(--glass-border);
+        }
+        
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: var(--glass-bg);
+            border-radius: var(--border-radius-small);
+            margin-bottom: 20px;
+            border: 1px solid var(--glass-border);
+        }
+        
+        .chat-input-container {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .chat-input {
+            flex: 1;
+            padding: 15px;
+            border: 1px solid var(--glass-border);
+            border-radius: var(--border-radius-small);
+            background: var(--glass-bg);
+            color: var(--text-primary);
+            font-size: 1em;
+            outline: none;
+            backdrop-filter: blur(10px);
+            transition: var(--transition);
+        }
+        
+        .chat-input:focus {
+            border-color: var(--glass-hover);
+            background: var(--glass-hover);
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+        }
+        
+        .chat-input::placeholder {
+            color: var(--text-muted);
+        }
+        
+        .send-button {
+            padding: 15px 25px;
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius-small);
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+            box-shadow: var(--shadow-light);
+        }
+        
+        .send-button:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-medium);
+        }
+        
+        .no-messages {
+            text-align: center;
+            color: var(--text-muted);
+            font-style: italic;
+            padding: 40px;
+        }
+    </style>
+</head>
+<body>
+    <div id="menuBarContainer"></div>
+    <div class="chat-container">
+        <div class="chat-header">
+            <h2 id="chatTitle">Artisan Chat</h2>
+            <p id="chatSubtitle">Loading...</p>
+        </div>
+        
+        <div class="chat-messages" id="chatMessages">
+            <div class="no-messages">No messages yet. Start the conversation!</div>
+        </div>
+        
+        <div id="typingIndicator" class="typing-indicator" style="display: none;">
+            <div class="typing-dots">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <span class="typing-text">Typing...</span>
+        </div>
+        
+        <div class="chat-input-container">
+            <input type="text" id="messageInput" class="chat-input" placeholder="Type your message..." maxlength="500">
+            <button id="sendButton" class="send-button">Send</button>
+        </div>
+    </div>
+    
+    <script src="menu-bar.js"></script>
+    <script src="artisan-chat.js"></script>
+</body>
+</html>
