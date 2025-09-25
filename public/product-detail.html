@@ -7,20 +7,24 @@
     <link rel="stylesheet" href="style.css">
     <style>
         body {
-            background-image: url("https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=1470&q=80");
-            background-size: cover;
-            background-position: center;
+            margin: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            color: #fff;
+            color: var(--text-primary);
+            min-height: 100vh;
+            background: var(--primary-gradient);
+            background-attachment: fixed;
             padding: 20px;
+            line-height: 1.6;
         }
         .container {
-            background-color: rgba(85, 55, 0, 0.9);
-            border-radius: 10px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border-radius: var(--border-radius);
             padding: 40px;
-            max-width: 1000px;
-            margin: 0 auto;
-            box-shadow: 0 0 30px rgba(43, 122, 11, 0.8);
+            max-width: 1200px;
+            margin: 40px auto;
+            box-shadow: var(--shadow-light);
+            border: 1px solid var(--glass-border);
         }
         .product-header {
             display: grid;
@@ -69,12 +73,12 @@
             gap: 20px;
         }
         .product-info h1 {
-            color: #f9e79f;
+            color: var(--text-primary);
             margin-bottom: 20px;
             font-size: 2.5em;
         }
         .product-price {
-            color: #f7dc6f;
+            color: var(--text-secondary);
             font-size: 2em;
             font-weight: bold;
             margin-bottom: 20px;
@@ -85,28 +89,29 @@
             margin-bottom: 20px;
         }
         .product-rating .stars {
-            color: #f7dc6f;
+            color: var(--text-secondary);
             font-size: 1.5em;
             margin-right: 15px;
         }
         .product-rating .rating-text {
-            color: #e8d68a;
+            color: var(--text-primary);
             font-size: 1.2em;
             font-weight: bold;
         }
         .product-details {
-            background: #5a3e00;
+            background: var(--glass-bg);
             padding: 20px;
-            border-radius: 10px;
+            border-radius: var(--border-radius-small);
             margin-bottom: 20px;
+            border: 1px solid var(--glass-border);
         }
         .product-details h3 {
-            color: #f9e79f;
+            color: var(--text-secondary);
             margin-bottom: 15px;
             font-size: 1.3em;
         }
         .product-details p {
-            color: #ddc87e;
+            color: var(--text-primary);
             margin: 10px 0;
             font-size: 1em;
         }
@@ -154,20 +159,20 @@
             transition: all 0.3s ease;
         }
         .btn-primary {
-            background: #f7dc6f;
-            color: #5a3e00;
+            background: var(--primary-gradient);
+            color: white;
         }
         .btn-primary:hover {
-            background: #e0c65e;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-medium);
         }
         .btn-secondary {
-            background: #5a3e00;
-            color: #f7dc6f;
-            border: 2px solid #f7dc6f;
+            background: var(--glass-bg);
+            color: var(--text-primary);
+            border: 1px solid var(--glass-border);
         }
         .btn-secondary:hover {
-            background: #f7dc6f;
-            color: #5a3e00;
+            background: var(--glass-hover);
         }
         .btn:disabled {
             background: #666;
@@ -175,30 +180,33 @@
             cursor: not-allowed;
         }
         .back-button {
-            background: #f7dc6f;
-            color: #5a3e00;
-            border: none;
+            background: var(--glass-bg);
+            color: var(--text-primary);
+            border: 1px solid var(--glass-border);
             padding: 10px 20px;
-            border-radius: 5px;
+            border-radius: 25px;
             cursor: pointer;
             font-weight: bold;
             margin-bottom: 20px;
+            text-decoration: none;
+            display: inline-block;
         }
         .back-button:hover {
-            background: #e0c65e;
+            background: var(--glass-hover);
         }
         .reviews-section {
             margin-top: 40px;
         }
         .reviews-section h2 {
-            color: #f9e79f;
+            color: var(--text-primary);
             margin-bottom: 20px;
         }
         .review-item {
-            background: #5a3e00;
+            background: var(--glass-bg);
             padding: 20px;
-            border-radius: 10px;
+            border-radius: var(--border-radius-small);
             margin-bottom: 15px;
+            border: 1px solid var(--glass-border);
         }
         .review-header {
             display: flex;
@@ -207,14 +215,14 @@
             margin-bottom: 10px;
         }
         .review-user {
-            color: #f9e79f;
+            color: var(--text-secondary);
             font-weight: bold;
         }
         .review-rating {
-            color: #f7dc6f;
+            color: var(--text-secondary);
         }
         .review-text {
-            color: #ddc87e;
+            color: var(--text-primary);
             line-height: 1.5;
         }
         .review-date {
@@ -232,13 +240,15 @@
             background-color: rgba(0, 0, 0, 0.7);
         }
         .purchase-modal-content {
-            background-color: #5a3e00;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
             margin: 10% auto;
             padding: 30px;
-            border-radius: 10px;
+            border-radius: var(--border-radius);
             width: 90%;
             max-width: 500px;
             position: relative;
+            border: 1px solid var(--glass-border);
         }
         .close {
             color: #f7dc6f;
@@ -252,7 +262,7 @@
         }
         .purchase-form label {
             display: block;
-            color: #f9e79f;
+            color: var(--text-primary);
             margin-bottom: 5px;
         }
         .purchase-form input, .purchase-form select {
@@ -260,21 +270,24 @@
             padding: 10px;
             margin-bottom: 15px;
             border-radius: 5px;
-            border: 1px solid #ccc;
+            border: 1px solid var(--glass-border);
+            background: var(--glass-bg);
+            color: var(--text-primary);
             box-sizing: border-box;
         }
         .purchase-form button {
-            background: #f7dc6f;
-            color: #5a3e00;
+            background: var(--primary-gradient);
+            color: white;
             border: none;
             padding: 12px 20px;
-            border-radius: 5px;
+            border-radius: 25px;
             cursor: pointer;
             font-weight: bold;
             width: 100%;
         }
         .purchase-form button:hover {
-            background: #e0c65e;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-medium);
         }
         .message {
             margin-top: 15px;
@@ -292,13 +305,14 @@
             color: #ffb3b3;
         }
         .artisan-info-section {
-            background: #5a3e00;
+            background: var(--glass-bg);
             padding: 20px;
-            border-radius: 10px;
+            border-radius: var(--border-radius-small);
             margin-bottom: 20px;
+            border: 1px solid var(--glass-border);
         }
         .artisan-info-section h3 {
-            color: #f9e79f;
+            color: var(--text-primary);
             margin-bottom: 15px;
         }
         .artisan-link {
@@ -311,19 +325,19 @@
             height: 60px;
             border-radius: 50%;
             object-fit: cover;
-            border: 2px solid #f7dc6f;
+            border: 2px solid var(--glass-border);
         }
         .artisan-details p {
-            color: #ddc87e;
+            color: var(--text-primary);
             margin: 5px 0;
         }
         .artisan-link-text {
-            color: #f7dc6f;
+            color: var(--text-secondary);
             text-decoration: none;
             font-weight: bold;
         }
         .artisan-link-text:hover {
-            color: #e0c65e;
+            color: var(--text-primary);
             text-decoration: underline;
         }
         /* Custom Dropdown Styles */

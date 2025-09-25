@@ -39,13 +39,16 @@ function displayMaterials(materials) {
         <div class="material-card">
             <img src="${material.img || 'https://via.placeholder.com/300x200'}" alt="${material.name}">
             <h3>${material.name}</h3>
-            <div class="price">$${material.price}</div>
+            <div class="price">${material.price}</div>
             <div class="seller-info">
                 <p><strong>Seller ID:</strong> ${material.artisan_id}</p>
                 <p><strong>Category:</strong> ${material.category.replace('_', ' ')}</p>
             </div>
             <button class="contact-seller-btn" onclick="contactSeller(${material.artisan_id})">
                 Contact Seller
+            </button>
+            <button class="purchase-btn" onclick="openPurchaseModal(${material.id}, ${material.price})">
+                Purchase
             </button>
         </div>
     `).join('');
@@ -143,4 +146,76 @@ function contactSeller(sellerId) {
             alert('Error loading seller information.');
         });
 }
+
+function openPurchaseModal(productId, price) {
+    document.getElementById('purchaseProductId').value = productId;
+    document.getElementById('purchaseProductPrice').value = price;
+    document.getElementById('quantity').value = 1;
+    updateTotalPrice();
+    document.getElementById('purchaseModal').style.display = 'block';
+}
+
+function closePurchaseModal() {
+    document.getElementById('purchaseModal').style.display = 'none';
+}
+
+document.getElementById('quantity').addEventListener('input', updateTotalPrice);
+
+function updateTotalPrice() {
+    const price = parseFloat(document.getElementById('purchaseProductPrice').value);
+    const quantity = parseInt(document.getElementById('quantity').value);
+    const totalPrice = price * quantity;
+    document.getElementById('totalPrice').textContent = `Total: ${totalPrice.toFixed(2)}`;
+}
+
+document.getElementById('purchaseForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const productId = document.getElementById('purchaseProductId').value;
+    const quantity = document.getElementById('quantity').value;
+    const shippingAddress = document.getElementById('shippingAddress').value;
+    const paymentMethod = document.getElementById('paymentMethod').value;
+    const userId = localStorage.getItem('userId');
+    
+    if (!userId) {
+        alert('Please log in to make a purchase.');
+        return;
+    }
+    
+    try {
+        const response = await fetch('/api/purchases', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            },
+            body: JSON.stringify({
+                product_id: productId,
+                user_id: userId,
+                quantity: quantity,
+                shipping_address: shippingAddress,
+                payment_method: paymentMethod
+            })
+        });
+        
+        const result = await response.json();
+        
+        const messageEl = document.getElementById('purchaseMessage');
+        if (response.ok) {
+            messageEl.textContent = 'Purchase successful!';
+            messageEl.className = 'message success';
+            setTimeout(() => {
+                closePurchaseModal();
+            }, 2000);
+        } else {
+            messageEl.textContent = result.message || 'Purchase failed.';
+            messageEl.className = 'message error';
+        }
+    } catch (error) {
+        console.error('Error making purchase:', error);
+        const messageEl = document.getElementById('purchaseMessage');
+        messageEl.textContent = 'An error occurred. Please try again.';
+        messageEl.className = 'message error';
+    }
+});
 
