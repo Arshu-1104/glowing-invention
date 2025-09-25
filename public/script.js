@@ -378,13 +378,15 @@ async function viewShoppingHistory() {
                         
                         <div class="product-info">
                             <div class="product-image">
-                                <img src="${purchase.product_image || 'https://via.placeholder.com/100'}" alt="${purchase.product_name}" />
+                                <a href="product-detail.html?id=${purchase.product_id}">
+                                    <img src="${purchase.product_image || 'https://via.placeholder.com/100'}" alt="${purchase.product_name}" />
+                                </a>
                             </div>
                             <div class="product-details">
-                                <h4>${purchase.product_name}</h4>
+                                <h4><a href="product-detail.html?id=${purchase.product_id}">${purchase.product_name}</a></h4>
                                 <p class="product-category">${purchase.product_category.charAt(0).toUpperCase() + purchase.product_category.slice(1).replace('_', ' ')}</p>
                                 <p class="artisan-name">by ${purchase.artisan_name}</p>
-                                <p class="product-price">$${purchase.product_price} each</p>
+                                <p class="product-price">${purchase.product_price} each</p>
                             </div>
                         </div>
                         
@@ -395,7 +397,7 @@ async function viewShoppingHistory() {
                             </div>
                             <div class="detail-row">
                                 <span class="label">Total Amount:</span>
-                                <span class="value total-amount">$${purchase.total_amount.toFixed(2)}</span>
+                                <span class="value total-amount">${purchase.total_amount.toFixed(2)}</span>
                             </div>
                             <div class="detail-row">
                                 <span class="label">Payment Method:</span>
