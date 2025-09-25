@@ -87,6 +87,67 @@
             transform: translateY(-2px);
             box-shadow: var(--shadow-medium);
         }
+        /* Custom Dropdown Styles */
+        .custom-dropdown {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+            text-align: left;
+        }
+
+        .dropdown-button {
+            width: 100%;
+            padding: 15px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--border-radius-small);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            color: var(--text-primary);
+            font-size: 1em;
+            transition: var(--transition);
+        }
+        .dropdown-button:hover {
+             background: var(--glass-hover);
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--border-radius-small);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            display: none;
+            z-index: 10;
+            backdrop-filter: blur(10px);
+            margin-top: 5px;
+            overflow: hidden;
+        }
+
+        .dropdown-menu.show {
+            display: block;
+        }
+
+        .dropdown-item {
+            display: block;
+            width: 100%;
+            padding: 12px 15px;
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            text-align: left;
+            cursor: pointer;
+            font-size: 1em;
+        }
+        .dropdown-item:hover {
+            background: var(--primary-gradient);
+            color: #fff;
+        }
     </style>
 </head>
 <body>
@@ -103,20 +164,34 @@
             <h2>Search Raw Materials</h2>
             <div class="search-controls">
                 <input type="text" id="searchInput" placeholder="Search materials...">
-                <select id="categoryFilter">
-                    <option value="">All Categories</option>
-                    <option value="textiles">Textiles</option>
-                    <option value="woodwork">Woodwork</option>
-                    <option value="jewelry">Jewelry</option>
-                    <option value="raw_material">Raw Materials</option>
-                </select>
-                <select id="priceFilter">
-                    <option value="">Any Price</option>
-                    <option value="0-25">Under $25</option>
-                    <option value="25-50">$25 - $50</option>
-                    <option value="50-100">$50 - $100</option>
-                    <option value="100+">Over $100</option>
-                </select>
+                <div class="custom-dropdown">
+                    <button type="button" class="dropdown-button" onclick="toggleDropdown('categoryFilterDropdown')">
+                        <span id="selectedCategory">All Categories</span>
+                        <span class="dropdown-arrow">▼</span>
+                    </button>
+                    <div id="categoryFilterDropdown" class="dropdown-menu">
+                        <button type="button" onclick="selectOption('All Categories', '', 'selectedCategory', 'categoryFilter', 'categoryFilterDropdown')" class="dropdown-item">All Categories</button>
+                        <button type="button" onclick="selectOption('Textiles', 'textiles', 'selectedCategory', 'categoryFilter', 'categoryFilterDropdown')" class="dropdown-item">Textiles</button>
+                        <button type="button" onclick="selectOption('Woodwork', 'woodwork', 'selectedCategory', 'categoryFilter', 'categoryFilterDropdown')" class="dropdown-item">Woodwork</button>
+                        <button type="button" onclick="selectOption('Jewelry', 'jewelry', 'selectedCategory', 'categoryFilter', 'categoryFilterDropdown')" class="dropdown-item">Jewelry</button>
+                        <button type="button" onclick="selectOption('Raw Materials', 'raw_material', 'selectedCategory', 'categoryFilter', 'categoryFilterDropdown')" class="dropdown-item">Raw Materials</button>
+                    </div>
+                </div>
+                <input type="hidden" id="categoryFilter" name="categoryFilter" value="">
+                <div class="custom-dropdown">
+                    <button type="button" class="dropdown-button" onclick="toggleDropdown('priceFilterDropdown')">
+                        <span id="selectedPrice">Any Price</span>
+                        <span class="dropdown-arrow">▼</span>
+                    </button>
+                    <div id="priceFilterDropdown" class="dropdown-menu">
+                        <button type="button" onclick="selectOption('Any Price', '', 'selectedPrice', 'priceFilter', 'priceFilterDropdown')" class="dropdown-item">Any Price</button>
+                        <button type="button" onclick="selectOption('Under $25', '0-25', 'selectedPrice', 'priceFilter', 'priceFilterDropdown')" class="dropdown-item">Under $25</button>
+                        <button type="button" onclick="selectOption('$25 - $50', '25-50', 'selectedPrice', 'priceFilter', 'priceFilterDropdown')" class="dropdown-item">$25 - $50</button>
+                        <button type="button" onclick="selectOption('$50 - $100', '50-100', 'selectedPrice', 'priceFilter', 'priceFilterDropdown')" class="dropdown-item">$50 - $100</button>
+                        <button type="button" onclick="selectOption('Over $100', '100+', 'selectedPrice', 'priceFilter', 'priceFilterDropdown')" class="dropdown-item">Over $100</button>
+                    </div>
+                </div>
+                <input type="hidden" id="priceFilter" name="priceFilter" value="">
                 <button onclick="searchMaterials()">Search</button>
             </div>
         </div>
@@ -132,5 +207,32 @@
     
     <script src="menu-bar.js"></script>
     <script src="raw-materials.js"></script>
+    <script>
+        window.toggleDropdown = (id) => {
+            const allDropdowns = document.querySelectorAll('.dropdown-menu');
+            allDropdowns.forEach(menu => {
+                if (menu.id !== id) {
+                    menu.classList.remove('show');
+                }
+            });
+            const menu = document.getElementById(id);
+            menu.classList.toggle('show');
+        };
+
+        window.selectOption = (label, value, labelId, inputId, dropdownId) => {
+            document.getElementById(labelId).textContent = label;
+            document.getElementById(inputId).value = value;
+            document.getElementById(dropdownId).classList.remove('show');
+        };
+
+        window.addEventListener('click', function(e) {
+            if (!e.target.closest('.custom-dropdown')) {
+                const allDropdowns = document.querySelectorAll('.dropdown-menu');
+                allDropdowns.forEach(menu => {
+                    menu.classList.remove('show');
+                });
+            }
+        });
+    </script>
 </body>
 </html>

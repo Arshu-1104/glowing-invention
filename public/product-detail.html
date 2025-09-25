@@ -326,6 +326,67 @@
             color: #e0c65e;
             text-decoration: underline;
         }
+        /* Custom Dropdown Styles */
+        .custom-dropdown {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+            text-align: left;
+        }
+
+        .dropdown-button {
+            width: 100%;
+            padding: 15px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--border-radius-small);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            color: var(--text-primary);
+            font-size: 1em;
+            transition: var(--transition);
+        }
+        .dropdown-button:hover {
+             background: var(--glass-hover);
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--border-radius-small);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            display: none;
+            z-index: 10;
+            backdrop-filter: blur(10px);
+            margin-top: 5px;
+            overflow: hidden;
+        }
+
+        .dropdown-menu.show {
+            display: block;
+        }
+
+        .dropdown-item {
+            display: block;
+            width: 100%;
+            padding: 12px 15px;
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            text-align: left;
+            cursor: pointer;
+            font-size: 1em;
+        }
+        .dropdown-item:hover {
+            background: var(--primary-gradient);
+            color: #fff;
+        }
     </style>
 </head>
 <body>
@@ -361,13 +422,19 @@
                 <input type="text" id="shippingAddress" placeholder="Enter your address" required>
                 
                 <label for="paymentMethod">Payment Method:</label>
-                <select id="paymentMethod" required>
-                    <option value="">Select Payment Method</option>
-                    <option value="credit_card">Credit Card</option>
-                    <option value="debit_card">Debit Card</option>
-                    <option value="paypal">PayPal</option>
-                    <option value="bank_transfer">Bank Transfer</option>
-                </select>
+                <div class="custom-dropdown">
+                    <button type="button" class="dropdown-button" onclick="toggleDropdown('paymentMethodDropdown')">
+                        <span id="selectedPaymentMethod">Select Payment Method</span>
+                        <span class="dropdown-arrow">▼</span>
+                    </button>
+                    <div id="paymentMethodDropdown" class="dropdown-menu">
+                        <button type="button" onclick="selectOption('Credit Card', 'credit_card', 'selectedPaymentMethod', 'paymentMethod', 'paymentMethodDropdown')" class="dropdown-item">Credit Card</button>
+                        <button type="button" onclick="selectOption('Debit Card', 'debit_card', 'selectedPaymentMethod', 'paymentMethod', 'paymentMethodDropdown')" class="dropdown-item">Debit Card</button>
+                        <button type="button" onclick="selectOption('PayPal', 'paypal', 'selectedPaymentMethod', 'paymentMethod', 'paymentMethodDropdown')" class="dropdown-item">PayPal</button>
+                        <button type="button" onclick="selectOption('Bank Transfer', 'bank_transfer', 'selectedPaymentMethod', 'paymentMethod', 'paymentMethodDropdown')" class="dropdown-item">Bank Transfer</button>
+                    </div>
+                </div>
+                <input type="hidden" id="paymentMethod" name="paymentMethod" value="">
                 
                 <div id="totalPrice" style="color: #f7dc6f; font-size: 1.2em; font-weight: bold; margin: 15px 0;"></div>
                 
@@ -386,14 +453,20 @@
                 <input type="hidden" id="ratingProductId">
                 
                 <label for="rating">Rating:</label>
-                <select id="rating" required>
-                    <option value="">Select Rating</option>
-                    <option value="5">5 Stars - Excellent</option>
-                    <option value="4">4 Stars - Very Good</option>
-                    <option value="3">3 Stars - Good</option>
-                    <option value="2">2 Stars - Fair</option>
-                    <option value="1">1 Star - Poor</option>
-                </select>
+                <div class="custom-dropdown">
+                    <button type="button" class="dropdown-button" onclick="toggleDropdown('ratingDropdown')">
+                        <span id="selectedRating">Select Rating</span>
+                        <span class="dropdown-arrow">▼</span>
+                    </button>
+                    <div id="ratingDropdown" class="dropdown-menu">
+                        <button type="button" onclick="selectOption('5 Stars - Excellent', '5', 'selectedRating', 'rating', 'ratingDropdown')" class="dropdown-item">5 Stars - Excellent</button>
+                        <button type="button" onclick="selectOption('4 Stars - Very Good', '4', 'selectedRating', 'rating', 'ratingDropdown')" class="dropdown-item">4 Stars - Very Good</button>
+                        <button type="button" onclick="selectOption('3 Stars - Good', '3', 'selectedRating', 'rating', 'ratingDropdown')" class="dropdown-item">3 Stars - Good</button>
+                        <button type="button" onclick="selectOption('2 Stars - Fair', '2', 'selectedRating', 'rating', 'ratingDropdown')" class="dropdown-item">2 Stars - Fair</button>
+                        <button type="button" onclick="selectOption('1 Star - Poor', '1', 'selectedRating', 'rating', 'ratingDropdown')" class="dropdown-item">1 Star - Poor</button>
+                    </div>
+                </div>
+                <input type="hidden" id="rating" name="rating" value="">
                 
                 <label for="reviewText">Review (Optional):</label>
                 <textarea id="reviewText" rows="4" placeholder="Share your experience with this product..."></textarea>
@@ -406,5 +479,32 @@
     
     <script src="menu-bar.js"></script>
     <script src="product-detail.js"></script>
+    <script>
+        window.toggleDropdown = (id) => {
+            const allDropdowns = document.querySelectorAll('.dropdown-menu');
+            allDropdowns.forEach(menu => {
+                if (menu.id !== id) {
+                    menu.classList.remove('show');
+                }
+            });
+            const menu = document.getElementById(id);
+            menu.classList.toggle('show');
+        };
+
+        window.selectOption = (label, value, labelId, inputId, dropdownId) => {
+            document.getElementById(labelId).textContent = label;
+            document.getElementById(inputId).value = value;
+            document.getElementById(dropdownId).classList.remove('show');
+        };
+
+        window.addEventListener('click', function(e) {
+            if (!e.target.closest('.custom-dropdown')) {
+                const allDropdowns = document.querySelectorAll('.dropdown-menu');
+                allDropdowns.forEach(menu => {
+                    menu.classList.remove('show');
+                });
+            }
+        });
+    </script>
 </body>
 </html>

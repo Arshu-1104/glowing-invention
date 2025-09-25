@@ -53,6 +53,67 @@
         .success { color: #4ade80; }
         .error { color: #f87171; }
         .back-button { background: var(--glass-bg); color: var(--text-primary); border: 1px solid var(--glass-border); padding: 12px 24px; border-radius: 25px; text-decoration: none; display: inline-block; margin-bottom: 20px; }
+        /* Custom Dropdown Styles */
+        .custom-dropdown {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+            text-align: left;
+        }
+
+        .dropdown-button {
+            width: 100%;
+            padding: 15px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--border-radius-small);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            color: var(--text-primary);
+            font-size: 1em;
+            transition: var(--transition);
+        }
+        .dropdown-button:hover {
+             background: var(--glass-hover);
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--border-radius-small);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            display: none;
+            z-index: 10;
+            backdrop-filter: blur(10px);
+            margin-top: 5px;
+            overflow: hidden;
+        }
+
+        .dropdown-menu.show {
+            display: block;
+        }
+
+        .dropdown-item {
+            display: block;
+            width: 100%;
+            padding: 12px 15px;
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            text-align: left;
+            cursor: pointer;
+            font-size: 1em;
+        }
+        .dropdown-item:hover {
+            background: var(--primary-gradient);
+            color: #fff;
+        }
     </style>
 </head>
 <body>
@@ -71,12 +132,19 @@
 
             <div class="form-group">
                 <label for="category">Category:</label>
-                <select id="category" name="category">
-                    <option value="textiles">Textiles</option>
-                    <option value="woodwork">Woodwork</option>
-                    <option value="jewelry">Jewelry</option>
-                    <option value="raw_material">Raw Material</option>
-                </select>
+                <div class="custom-dropdown">
+                    <button type="button" class="dropdown-button" onclick="toggleDropdown('categoryDropdown')">
+                        <span id="selectedCategory">Textiles</span>
+                        <span class="dropdown-arrow">▼</span>
+                    </button>
+                    <div id="categoryDropdown" class="dropdown-menu">
+                        <button type="button" onclick="selectOption('Textiles', 'textiles', 'selectedCategory', 'category', 'categoryDropdown')" class="dropdown-item">Textiles</button>
+                        <button type="button" onclick="selectOption('Woodwork', 'woodwork', 'selectedCategory', 'category', 'categoryDropdown')" class="dropdown-item">Woodwork</button>
+                        <button type="button" onclick="selectOption('Jewelry', 'jewelry', 'selectedCategory', 'category', 'categoryDropdown')" class="dropdown-item">Jewelry</button>
+                        <button type="button" onclick="selectOption('Raw Material', 'raw_material', 'selectedCategory', 'category', 'categoryDropdown')" class="dropdown-item">Raw Material</button>
+                    </div>
+                </div>
+                <input type="hidden" id="category" name="category" value="textiles">
             </div>
 
             <div class="form-group">
@@ -162,6 +230,32 @@
                     messageElement.className = 'message error';
                 }
             });
+        });
+
+        window.toggleDropdown = (id) => {
+            const allDropdowns = document.querySelectorAll('.dropdown-menu');
+            allDropdowns.forEach(menu => {
+                if (menu.id !== id) {
+                    menu.classList.remove('show');
+                }
+            });
+            const menu = document.getElementById(id);
+            menu.classList.toggle('show');
+        };
+
+        window.selectOption = (label, value, labelId, inputId, dropdownId) => {
+            document.getElementById(labelId).textContent = label;
+            document.getElementById(inputId).value = value;
+            document.getElementById(dropdownId).classList.remove('show');
+        };
+
+        window.addEventListener('click', function(e) {
+            if (!e.target.closest('.custom-dropdown')) {
+                const allDropdowns = document.querySelectorAll('.dropdown-menu');
+                allDropdowns.forEach(menu => {
+                    menu.classList.remove('show');
+                });
+            }
         });
     </script>
 </body>
