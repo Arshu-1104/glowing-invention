@@ -1,34 +1,72 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Product - Artisan Marketplace</title>
-    <link rel="stylesheet" href="style.css">
     <style>
+        /* Relevant styles from your style.css */
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --accent-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --glass-bg: rgba(255, 255, 255, 0.25);
+            --glass-border: rgba(255, 255, 255, 0.3);
+            --glass-hover: rgba(255, 255, 255, 0.35);
+            --text-primary: #ffffff;
+            --text-secondary: #e8d68a;
+            --text-muted: #ddc87e;
+            --shadow-light: 0 8px 32px rgba(0, 0, 0, 0.1);
+            --border-radius: 20px;
+            --border-radius-small: 15px;
+            --transition: all 0.3s ease;
+        }
         body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--text-primary);
+            min-height: 100vh;
+            background: var(--primary-gradient);
+            background-attachment: fixed;
             padding: 20px;
+            line-height: 1.6;
         }
         .form-container {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border-radius: var(--border-radius);
+            padding: 40px;
             max-width: 600px;
-            margin: 0 auto;
+            margin: 40px auto;
+            box-shadow: var(--shadow-light);
+            border: 1px solid var(--glass-border);
         }
+        .page-header { text-align: center; margin-bottom: 40px; }
+        .page-header h1 { font-size: 2.5em; margin-bottom: 15px; background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .page-header p { font-size: 1.2em; color: var(--text-secondary); }
+        .form-group { margin-bottom: 25px; }
+        .form-group label { display: block; color: var(--text-primary); margin-bottom: 8px; font-weight: 600; font-size: 1.1em; }
+        .form-group input, .form-group select { width: 100%; padding: 15px; border: 1px solid var(--glass-border); border-radius: var(--border-radius-small); background: var(--glass-bg); color: var(--text-primary); font-size: 1em; outline: none; transition: var(--transition); backdrop-filter: blur(10px); }
+        .form-group input:focus, .form-group select:focus { border-color: var(--glass-hover); background: var(--glass-hover); }
+        .btn { display: inline-block; padding: 12px 24px; border: none; border-radius: 25px; font-weight: 600; font-size: 1em; cursor: pointer; transition: var(--transition); text-decoration: none; text-align: center; }
+        .btn-primary { background: var(--primary-gradient); color: white; box-shadow: var(--shadow-light); }
+        .message { text-align: center; margin-top: 15px; font-weight: 600; min-height: 1.2em; }
+        .success { color: #4ade80; }
+        .error { color: #f87171; }
+        .back-button { background: var(--glass-bg); color: var(--text-primary); border: 1px solid var(--glass-border); padding: 12px 24px; border-radius: 25px; text-decoration: none; display: inline-block; margin-bottom: 20px; }
     </style>
 </head>
 <body>
-    <div id="menuBarContainer"></div>
     <div class="form-container">
         <a href="/" class="back-button">← Back to Home</a>
         <div class="page-header">
             <h1>Add New Product</h1>
-            <p>Create a new product listing for your customers</p>
+            <p>Fill in the details to list a new product.</p>
         </div>
         
         <form id="addProductForm">
             <div class="form-group">
                 <label for="productName">Product Name:</label>
-                <input type="text" id="productName" name="productName" required placeholder="Enter product name">
+                <input type="text" id="productName" name="productName" required placeholder="e.g., Hand-carved Wooden Elephant">
             </div>
 
             <div class="form-group">
@@ -43,20 +81,88 @@
 
             <div class="form-group">
                 <label for="price">Price:</label>
-                <input type="number" id="price" name="price" step="0.01" required placeholder="Enter price">
+                <input type="number" id="price" name="price" step="0.01" required placeholder="e.g., 49.99">
             </div>
 
             <div class="form-group">
-                <label for="imageFiles">Product Images:</label>
-                <input type="file" id="imageFiles" name="imageFiles" multiple accept="image/*" placeholder="Select product images">
-                <small>You can select multiple images. The first image will be the primary image.</small>
+                <label for="imageFiles">Product Images (up to 4):</label>
+                <input type="file" id="imageFiles" name="imageFiles" multiple accept="image/*" required>
+                <small>The first image will be the primary one.</small>
             </div>
 
             <button type="submit" class="btn btn-primary" style="width: 100%;">Add Product</button>
             <p id="message" class="message"></p>
         </form>
     </div>
-    <script src="menu-bar.js"></script>
-    <script src="add-product.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const addProductForm = document.getElementById('addProductForm');
+            const messageElement = document.getElementById('message');
+
+            const userRole = localStorage.getItem('userRole');
+            const userId = localStorage.getItem('userId');
+            const token = localStorage.getItem('token');
+
+            if (!token || !userId || (userRole !== 'artisan' && userRole !== 'seller')) {
+                messageElement.textContent = 'You must be logged in as an Artisan or Seller to add products.';
+                messageElement.className = 'message error';
+                addProductForm.style.display = 'none';
+                return;
+            }
+
+            addProductForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                messageElement.textContent = 'Uploading, please wait...';
+                messageElement.className = 'message';
+
+                const imageFiles = document.getElementById('imageFiles').files;
+                if (imageFiles.length > 4) {
+                    messageElement.textContent = 'You can upload a maximum of 4 images.';
+                    messageElement.className = 'message error';
+                    return;
+                }
+
+                // Use FormData to send text and files in one request
+                const formData = new FormData();
+                formData.append('productName', document.getElementById('productName').value);
+                formData.append('category', document.getElementById('category').value);
+                formData.append('price', document.getElementById('price').value);
+                formData.append('artisanId', userId); // Append artisanId
+
+                // Append all selected files
+                for (let i = 0; i < imageFiles.length; i++) {
+                    formData.append('images', imageFiles[i]);
+                }
+
+                try {
+                    const response = await fetch('/api/products/add-with-images', {
+                        method: 'POST',
+                        headers: {
+                            // Don't set 'Content-Type', browser does it for FormData with boundary
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: formData,
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        messageElement.textContent = 'Product added successfully!';
+                        messageElement.className = 'message success';
+                        addProductForm.reset();
+                    } else {
+                        messageElement.textContent = data.message || 'Failed to add product.';
+                        messageElement.className = 'message error';
+                    }
+
+                } catch (error) {
+                    console.error('Error adding product:', error);
+                    messageElement.textContent = 'An error occurred. Please try again later.';
+                    messageElement.className = 'message error';
+                }
+            });
+        });
+    </script>
 </body>
 </html>

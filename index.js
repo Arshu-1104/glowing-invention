@@ -26,14 +26,12 @@ app.use(express.json());
 // Configure multer for file uploads
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        const uploadPath = file.fieldname === 'sellerImage' ? 'sellerimages' : 'productimages';
+        const uploadPath = 'productimages';
         cb(null, uploadPath);
     },
     filename: function (req, file, cb) {
-        const productId = req.body.productId || 'temp';
-        const imageNumber = req.body.imageNumber || '1';
-        const extension = path.extname(file.originalname);
-        cb(null, `${productId}_${imageNumber}${extension}`);
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
     }
 });
 
@@ -164,6 +162,36 @@ app.post('/api/signup', (req, res) => {
                 userRole: role
             });
         });
+    });
+});
+
+
+app.post('/api/products/add-with-images', upload.array('images', 4), (req, res) => {
+    const { productName, category, price, artisanId } = req.body;
+    const images = req.files;
+
+    if (!productName || !category || !price || !artisanId) {
+        return res.status(400).json({ message: 'Missing required product information.' });
+    }
+
+    db.run('INSERT INTO products (name, category, price, artisan_id) VALUES (?, ?, ?, ?)', [productName, category, price, artisanId], function(err) {
+        if (err) {
+            return res.status(500).json({ message: 'Failed to add product to database.', error: err.message });
+        }
+
+        const productId = this.lastID;
+
+        if (images && images.length > 0) {
+            const imgStmt = db.prepare('INSERT INTO product_images (product_id, image_path, is_primary) VALUES (?, ?, ?)');
+            images.forEach((image, index) => {
+                const newPath = `productimages/${productId}_${index + 1}${path.extname(image.originalname)}`;
+                fs.renameSync(image.path, newPath);
+                imgStmt.run(productId, newPath, index === 0 ? 1 : 0);
+            });
+            imgStmt.finalize();
+        }
+
+        res.status(201).json({ message: 'Product added successfully!', productId: productId });
     });
 });
 
