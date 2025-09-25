@@ -1,12 +1,30 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Artisan Marketplace - Login</title>
-    <link rel="stylesheet" href="style.css">
     <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --accent-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --glass-bg: rgba(255, 255, 255, 0.25);
+            --glass-border: rgba(255, 255, 255, 0.3);
+            --glass-hover: rgba(255, 255, 255, 0.35);
+            --text-primary: #ffffff;
+            --text-secondary: #e8d68a;
+            --text-muted: #ddc87e;
+            --shadow-light: 0 8px 32px rgba(0, 0, 0, 0.1);
+            --shadow-medium: 0 15px 40px rgba(0, 0, 0, 0.2);
+            --border-radius: 20px;
+            --border-radius-small: 15px;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
         body {
             display: flex;
             justify-content: center;
@@ -63,7 +81,11 @@
             font-size: 1.1em;
         }
         
-        .auth-container label {
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
             display: block;
             text-align: left;
             margin-bottom: 8px;
@@ -74,11 +96,9 @@
         
         .auth-container input[type="text"],
         .auth-container input[type="email"],
-        .auth-container input[type="password"],
-        .auth-container select {
+        .auth-container input[type="password"] {
             width: 100%;
             padding: 15px;
-            margin-bottom: 20px;
             border-radius: var(--border-radius-small);
             border: 1px solid var(--glass-border);
             background: var(--glass-bg);
@@ -89,8 +109,7 @@
             backdrop-filter: blur(10px);
         }
         
-        .auth-container input:focus,
-        .auth-container select:focus {
+        .auth-container input:focus {
             border-color: var(--glass-hover);
             background: var(--glass-hover);
             box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
@@ -101,7 +120,7 @@
             color: var(--text-muted);
         }
         
-        .auth-container button {
+        .auth-container button[type="submit"], .auth-toggle button {
             width: 100%;
             padding: 15px;
             background: var(--primary-gradient);
@@ -117,12 +136,12 @@
             overflow: hidden;
         }
         
-        .auth-container button:hover {
+        .auth-container button[type="submit"]:hover, .auth-toggle button:hover {
             transform: translateY(-2px);
             box-shadow: var(--shadow-medium);
         }
         
-        .auth-container button::before {
+        .auth-container button[type="submit"]::before, .auth-toggle button::before {
             content: '';
             position: absolute;
             top: 0;
@@ -133,7 +152,7 @@
             transition: left 0.5s;
         }
         
-        .auth-container button:hover::before {
+        .auth-container button[type="submit"]:hover::before, .auth-toggle button:hover::before {
             left: 100%;
         }
         
@@ -141,12 +160,14 @@
             color: #f87171;
             margin-top: 15px;
             font-weight: 600;
+            min-height: 1em;
         }
         
         .auth-container .success-message {
             color: #4ade80;
             margin-top: 15px;
             font-weight: 600;
+            min-height: 1em;
         }
         
         .auth-toggle {
@@ -172,17 +193,72 @@
             background: var(--glass-hover);
         }
         
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        .form-group label {
-            margin-bottom: 8px;
-        }
-        
         .hidden {
             display: none;
         }
+        
+        /* Custom Dropdown Styles */
+        .custom-dropdown {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+            text-align: left;
+        }
+
+        .dropdown-button {
+            width: 100%;
+            padding: 15px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--border-radius-small);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            color: var(--text-primary);
+            font-size: 1em;
+            transition: var(--transition);
+        }
+        .dropdown-button:hover {
+             background: var(--glass-hover);
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--border-radius-small);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            display: none;
+            z-index: 10;
+            backdrop-filter: blur(10px);
+            margin-top: 5px;
+            overflow: hidden;
+        }
+
+        .dropdown-menu.show {
+            display: block;
+        }
+
+        .dropdown-item {
+            display: block;
+            width: 100%;
+            padding: 12px 15px;
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            text-align: left;
+            cursor: pointer;
+            font-size: 1em;
+        }
+        .dropdown-item:hover {
+            background: var(--primary-gradient);
+            color: #fff;
+        }
+
     </style>
 </head>
 <body>
@@ -203,14 +279,20 @@
             </div>
 
             <div class="form-group">
-                <label for="role">Account Type</label>
-                <select id="role" name="role">
-                    <option value="user">Customer</option>
-                    <option value="artisan">Artisan</option>
-                    <option value="seller">Raw Material Seller</option>
-                </select>
+                <label>Account Type</label>
+                <div class="custom-dropdown">
+                    <button type="button" class="dropdown-button" onclick="toggleDropdown('roleDropdown')">
+                        <span id="selectedRole">Customer</span>
+                        <span class="dropdown-arrow">▼</span>
+                    </button>
+                    <div id="roleDropdown" class="dropdown-menu">
+                        <button type="button" onclick="selectRole('Customer', 'user', 'selectedRole', 'role', 'roleDropdown')" class="dropdown-item">Customer</button>
+                        <button type="button" onclick="selectRole('Artisan', 'artisan', 'selectedRole', 'role', 'roleDropdown')" class="dropdown-item">Artisan</button>
+                        <button type="button" onclick="selectRole('Raw Material Seller', 'seller', 'selectedRole', 'role', 'roleDropdown')" class="dropdown-item">Raw Material Seller</button>
+                    </div>
+                </div>
+                <input type="hidden" id="role" name="role" value="user">
             </div>
-
             <button type="submit">Sign In</button>
             <p id="errorMessage" class="error-message"></p>
         </form>
@@ -238,12 +320,19 @@
             </div>
 
             <div class="form-group">
-                <label for="signupRole">Account Type</label>
-                <select id="signupRole" name="role">
-                    <option value="user">Customer</option>
-                    <option value="artisan">Artisan</option>
-                    <option value="seller">Raw Material Seller</option>
-                </select>
+                <label>Account Type</label>
+                <div class="custom-dropdown">
+                    <button type="button" class="dropdown-button" onclick="toggleDropdown('signupRoleDropdown')">
+                        <span id="selectedSignupRole">Customer</span>
+                        <span class="dropdown-arrow">▼</span>
+                    </button>
+                    <div id="signupRoleDropdown" class="dropdown-menu">
+                         <button type="button" onclick="selectRole('Customer', 'user', 'selectedSignupRole', 'signupRole', 'signupRoleDropdown')" class="dropdown-item">Customer</button>
+                        <button type="button" onclick="selectRole('Artisan', 'artisan', 'selectedSignupRole', 'signupRole', 'signupRoleDropdown')" class="dropdown-item">Artisan</button>
+                        <button type="button" onclick="selectRole('Raw Material Seller', 'seller', 'selectedSignupRole', 'signupRole', 'signupRoleDropdown')" class="dropdown-item">Raw Material Seller</button>
+                    </div>
+                </div>
+                <input type="hidden" id="signupRole" name="role" value="user">
             </div>
 
             <button type="submit">Create Account</button>
@@ -253,9 +342,158 @@
         
         <div class="auth-toggle">
             <p id="toggleText">Don't have an account?</p>
-            <button type="button" id="toggleButton" onclick="toggleAuthForm()">Create New Account</button>
+            <button type="button" id="toggleButton">Create New Account</button>
         </div>
     </div>
-    <script src="login.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const loginForm = document.getElementById('loginForm');
+            const signupForm = document.getElementById('signupForm');
+            const errorMessage = document.getElementById('errorMessage');
+            const signupErrorMessage = document.getElementById('signupErrorMessage');
+            const signupSuccessMessage = document.getElementById('signupSuccessMessage');
+            const toggleButton = document.getElementById('toggleButton');
+
+            // --- Form Handlers ---
+            loginForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                clearMessages();
+                
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+                const role = document.getElementById('role').value;
+
+                try {
+                    const response = await fetch('/api/login', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ email, password, role }),
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        // Login successful
+                        localStorage.setItem('token', data.token);
+                        localStorage.setItem('userRole', role);
+                        localStorage.setItem('userId', data.userId);
+                        localStorage.setItem('userName', data.userName);
+                        window.location.href = '/';
+                    } else {
+                        errorMessage.textContent = data.message || 'Login failed.';
+                    }
+                } catch (error) {
+                    console.error('Error during login:', error);
+                    errorMessage.textContent = 'An error occurred. Please try again later.';
+                }
+
+            });
+
+            signupForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                clearMessages();
+
+                const name = document.getElementById('signupName').value;
+                const email = document.getElementById('signupEmail').value;
+                const password = document.getElementById('signupPassword').value;
+                const confirmPassword = document.getElementById('signupConfirmPassword').value;
+                const role = document.getElementById('signupRole').value;
+
+                if (password !== confirmPassword) {
+                    signupErrorMessage.textContent = 'Passwords do not match.';
+                    return;
+                }
+
+                if (password.length < 6) {
+                    signupErrorMessage.textContent = 'Password must be at least 6 characters long.';
+                    return;
+                }
+                
+                try {
+                    const response = await fetch('/api/signup', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ name, email, password, role }),
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        signupSuccessMessage.textContent = 'Account created successfully! You can now sign in.';
+                
+                        setTimeout(() => {
+                            toggleAuthForm();
+                            document.getElementById('email').value = email;
+                            document.getElementById('role').value = role;
+                            document.getElementById('selectedRole').textContent = document.querySelector(`#roleDropdown button[onclick*="'${role}'"]`).textContent;
+                        }, 2000);
+                    } else {
+                       signupErrorMessage.textContent = data.message || 'Signup failed.';
+                    }
+                } catch (error) {
+                    console.error('Error during signup:', error);
+                    signupErrorMessage.textContent = 'An error occurred. Please try again later.';
+                }
+            });
+
+            const clearMessages = () => {
+                errorMessage.textContent = '';
+                signupErrorMessage.textContent = '';
+                signupSuccessMessage.textContent = '';
+            };
+
+            // --- UI Toggling Functions (exposed to window for onclick) ---
+            
+            const toggleAuthForm = () => {
+                const loginForm = document.getElementById('loginForm');
+                const signupForm = document.getElementById('signupForm');
+                const toggleText = document.getElementById('toggleText');
+                const toggleButton = document.getElementById('toggleButton');
+
+                clearMessages();
+
+                if (loginForm.classList.contains('hidden')) {
+                    loginForm.classList.remove('hidden');
+                    signupForm.classList.add('hidden');
+                    toggleText.textContent = "Don't have an account?";
+                    toggleButton.textContent = "Create New Account";
+                } else {
+                    loginForm.classList.add('hidden');
+                    signupForm.classList.remove('hidden');
+                    toggleText.textContent = "Already have an account?";
+                    toggleButton.textContent = "Sign In";
+                }
+            };
+            
+            toggleButton.addEventListener('click', toggleAuthForm);
+
+            window.toggleDropdown = (id) => {
+                document.getElementById('roleDropdown').classList.remove('show');
+                document.getElementById('signupRoleDropdown').classList.remove('show');
+                const menu = document.getElementById(id);
+                menu.classList.toggle('show');
+            };
+
+            window.selectRole = (label, value, labelId, inputId, dropdownId) => {
+                document.getElementById(labelId).textContent = label;
+                document.getElementById(inputId).value = value;
+                document.getElementById(dropdownId).classList.remove('show');
+            };
+            
+            // Close dropdowns if clicking outside
+            window.addEventListener('click', function(e) {
+                if (!e.target.closest('.custom-dropdown')) {
+                    document.getElementById('roleDropdown').classList.remove('show');
+                    document.getElementById('signupRoleDropdown').classList.remove('show');
+                }
+            });
+        });
+    </script>
 </body>
 </html>
+
