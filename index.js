@@ -410,11 +410,12 @@ app.post('/api/purchases', (req, res) => {
 app.get('/api/purchases/:userId', (req, res) => {
     const userId = req.params.userId;
     
-    db.all(`SELECT p.*, pr.name as product_name, pr.price as product_price, pr.img as product_image, pr.category as product_category,
+    db.all(`SELECT p.*, pr.name as product_name, pr.price as product_price, pi.image_path as product_image, pr.category as product_category,
                    u.name as artisan_name
             FROM purchases p 
             JOIN products pr ON p.product_id = pr.id 
             JOIN users u ON pr.artisan_id = u.id
+            LEFT JOIN product_images pi ON pr.id = pi.product_id AND pi.is_primary = 1
             WHERE p.user_id = ? 
             ORDER BY p.created_at DESC`, [userId], (err, purchases) => {
         if (err) {

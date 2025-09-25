@@ -95,61 +95,7 @@ class MenuBar {
     }
 }
 
-// Global functions for user menu
-function toggleUserMenu() {
-    const userMenu = document.getElementById('userMenu');
-    if (userMenu) {
-        userMenu.classList.toggle('show');
-    }
-}
 
-function viewProfile() {
-    // Close menu first
-    toggleUserMenu();
-    // Open profile modal
-    if (typeof openUserInfoModal === 'function') {
-        openUserInfoModal();
-    }
-}
-
-function viewShoppingHistory() {
-    // Close menu first
-    toggleUserMenu();
-    // Open shopping history modal
-    if (typeof openShoppingHistoryModal === 'function') {
-        openShoppingHistoryModal();
-    }
-}
-
-function editProfile() {
-    // Close menu first
-    toggleUserMenu();
-    // For now, just show an alert - can be expanded later
-    alert('Edit Profile functionality coming soon!');
-}
-
-function logout() {
-    // Clear all stored data
-    localStorage.removeItem('token');
-    localStorage.removeItem('userRole');
-    localStorage.removeItem('userId');
-    localStorage.removeItem('userName');
-    localStorage.removeItem('currentChat');
-    localStorage.removeItem('artisanChatId');
-    
-    // Redirect to home page
-    window.location.href = '/';
-}
-
-// Close user menu when clicking outside
-document.addEventListener('click', (e) => {
-    const userMenu = document.getElementById('userMenu');
-    const userMenuButton = document.querySelector('.user-menu-button');
-    
-    if (userMenu && userMenuButton && !userMenu.contains(e.target) && !userMenuButton.contains(e.target)) {
-        userMenu.classList.remove('show');
-    }
-});
 
 // Export for use in other files
 window.MenuBar = MenuBar;
