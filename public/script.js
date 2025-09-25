@@ -14,8 +14,10 @@ document.addEventListener('DOMContentLoaded', () => {
         menuBarContainer.appendChild(menuBar.render());
     };
 
-    // Initialize menu bar
-    initializeMenuBar();
+    // Initialize menu bar only on the home page
+    if (window.location.pathname === '/' || window.location.pathname === '/index.html') {
+        initializeMenuBar();
+    }
 
 
     const renderArtisans = (artisans) => {
