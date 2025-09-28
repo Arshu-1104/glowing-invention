@@ -48,7 +48,7 @@ body {
     backdrop-filter: blur(20px);
     border-radius: var(--border-radius);
     padding: 40px;
-    width: 100%;
+    max-width:1200px;
     margin: 0 auto;
     box-shadow: var(--shadow-light);
     border: 1px solid var(--glass-border);
